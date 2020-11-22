@@ -1,0 +1,10 @@
+http:
+  port: "8092"
+  path: "api"
+fttp:
+  filepath: "C:/anypoint/AnypointStudio/Propect-assignment/customer-management-proj/src/main/resources/Customers-PRD/customerFile.csv"
+
+
+  
+
+

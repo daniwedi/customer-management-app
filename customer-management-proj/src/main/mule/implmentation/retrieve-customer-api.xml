@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="retrieve-customer-apiFlow" doc:id="59a6c8f2-fb3d-4bb2-8064-27c04c26947d" >
+		<logger level="INFO" doc:name="Logger" doc:id="d67e70c0-9fc9-40c3-a4c9-d54c4e4c7cc5" />
+		<file:read doc:name="Read" doc:id="d48e0a68-0e62-486f-858b-59695e42ba11" config-ref="File_Config" path="${fttp.filepath}"/>
+		<choice doc:name="Choice" doc:id="40714d72-08d7-4e80-b2e7-876cf28a2224" >
+			<when expression="#[sizeOf(payload) == 0]">
+				<logger level="INFO" doc:name="Logger" doc:id="01931fd5-065c-41ab-b5a5-79d7b021fb1d" message="#[payload]"/>
+				<raise-error doc:name="Raise error" doc:id="981d1dfe-e1f9-49fb-8e3a-267639fedad7" type="RECORD:NO_CUSCTOMER" description="either there is no file or no reccord in the file" />
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="52925faf-e3bc-41e8-9cf0-2f3fc939e61a">
+					<ee:message>
+						<ee:set-payload><![CDATA[output application/json
+fun format(d:Number) = d as Number{
+	format: "dd-MM-yyyy'T'HH:mm:ss.SSS"
+} as DateTime as Date
+---
+{"Customer":payload map ( payload01 , indexOfPayload01 ) -> {
+	ClientKey:payload01.ClientKey,
+	FirstName: payload01.FirstName,
+	MiddleName: payload01.MiddleName,
+	LastName: payload01.LastName,
+	BirthDate: format(payload01.BirthDate) as Date {format:'dd-MM-yyyy'},
+	Height: payload01.Height,
+	Weight: payload01.Weight,
+	BillingStreet: ((((payload01.BillingStreet default "") ++ "," ++ payload01.BillingCity ++ ", "
+	) ++ payload01.BillingState) ++ ", " ++  payload01.BillingPostalCode) ++ ", " ++ payload01.BillingCountry,
+	CreatedDate: format(payload01.CreatedDate) as Date {
+		format:'dd-MM-yyyy'
+	}
+	
+}}++ {"TotalCustomers":sizeOf(payload)}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<ee:transform doc:name="Transform Message" doc:id="394dc569-16ca-4e1d-8efb-9a3d88ce3a4f">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="TotalCustomers"><![CDATA[%dw 2.0
+output application/java
+---
+payload.TotalCustomers]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error continue" doc:id="3290226c-b801-4c67-9548-9870af7be1d3" type="RECORD:NO_CUSCTOMER">
+				<ee:transform doc:name="Transform Message" doc:id="6957bcaa-8dab-411c-9156-8067f6461f53" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[204]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

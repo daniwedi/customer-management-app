@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="retrieve-customer-api-suite.xml" />
+	<munit:test name="retrieve-customer-api-suiteTest1" doc:id="02834cad-e90e-40f1-a719-442137da5612" >
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="216ae5c7-28ae-49ad-ba75-e6d82bd3f6b2" name="retrieve-customer-apiFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="7e98a308-aff3-4b39-b57c-a1612795f0fa" expression="#[sizeOf(payload.Customer)]" is="#[MunitTools::equalTo(vars.TotalCustomers)]"/>
+			<munit:set-event doc:name="Set Event" doc:id="4964d8ee-cd82-4f14-a5ad-a96bc8474683">
+				<munit:payload value="#[readUrl('classpath://deletecustomerapiFlowtest\set-event_payload.dwl')]" />
+				<munit:attributes value="#[readUrl('classpath://deletecustomerapiFlowtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="7bf4d57f-3f62-4c86-95de-10dbdb212ee9" name="delete-customer-apiFlow" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="retrieve-customer-api-suiteTest" doc:id="8f978e67-13e2-4c98-b272-735292860bfd" >
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="29524baa-0ff0-4b5f-9e80-220c1adca35a" name="retrieve-customer-apiFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="56b87122-f569-42b1-8431-0b3be4481516" expression="#[vars.httpStatus]" is="#[MunitTools::equalTo(204)]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

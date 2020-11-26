@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="create-customer-api-test-suite.xml" />
+	<munit:test name="create-customer-api-test-suite-flow-1" doc:id="1c3bd5d8-60fc-4a87-bfa7-3e507cf5f2e5" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="60da476a-8da8-4be8-8e1c-2c3e2cc32c1d" processor="file:read">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="790f4673-88f3-4d24-884b-503f9fd4b8a6" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[
+%dw 2.0
+output application/csv
+---
+readUrl('classpath://sample-data/read-empty-customer-details.csv', &quot;application/csv&quot;)
+]" mediaType="application/csv" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1c995d00-bab7-426d-8e7e-77a20e802786" >
+				<munit:payload value="#[
+%dw 2.0
+output application/json
+--- 
+readUrl('classpath://sample-data/create-customer-suite-input.json', &quot;application/json&quot;)]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to create-customer-apiFlow" doc:id="624d1b23-a5f5-4c99-8861-c4236abc6b9d" name="create-customer-apiFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c9e6a139-7acc-4033-99a0-e31e2a9a9fb3" actual="#[payload.message]" message="execution with header successful" expected='#["The customer with ClientKey " ++ vars.ClientKey ++ " is succesfully created "]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="create-customer-api-test-suite-flow-2" doc:id="2f9e7606-aacf-45e6-a92a-6a3224271d48" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="26c3d11d-5a60-4da5-a8fc-6baf324d64aa" processor="file:read">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="790f4673-88f3-4d24-884b-503f9fd4b8a6" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[
+%dw 2.0
+output application/csv
+---
+readUrl('classpath://sample-data/read-customer-details.csv', &quot;application/csv&quot;)
+]" mediaType="application/csv" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="8d366669-7cf9-4fe2-a0a2-c2f615cbc99b" >
+				<munit:payload value="#[
+%dw 2.0
+output application/json 
+--- 
+readUrl('classpath://sample-data/create-customer-suite-input.json', &quot;application/json&quot;)
+]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to create-customer-apiFlow" doc:id="a1920dab-d0c4-4d45-a022-8713d9574f37" name="create-customer-apiFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="41d35c9b-c4e0-4eb0-b7c9-a4d2a1e6fcbd" actual="#[payload.message]" expected='#[%dw 2.0
+output application/json
+---
+"The customer with ClientKey " ++ vars.ClientKey ++ " is succesfully created "]' message="execution without header successful"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

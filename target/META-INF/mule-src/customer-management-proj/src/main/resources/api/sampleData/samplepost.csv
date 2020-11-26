@@ -1,0 +1,3 @@
+FirstName,MiddleName,LastName,BirthDate,Height,Weight,BillingStreet,BillingCity,BillingState,BillingPostalCode,BillingCountry,CreatedDate
+Kidane,Samuel,Tesfa,1985-10-11,5.7,60,5415 W Harmon Avenue,Las Vegas,NV,89103,US,2020-10-12
+Selam,Beyene,Tesfa,1980-10-11,5.9,90,2057 west shwgo,Baltimor,MD,20556,US,2020-10-12

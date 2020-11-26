@@ -1,0 +1,38 @@
+{
+  "Customer": [
+    {
+      "ClientKey": "51787817",
+      "FirstName": "Kidane",
+      "MiddleName": "Samuel",
+      "LastName": "Tesfa",
+      "BirthDate": "11-10-1985",
+      "Height": "5.7",
+      "Weight": "60",
+      "BillingStreet": "5415 W Harmon Avenue,Las Vegas, NV, 89103, US",
+      "CreatedDate": "18-11-2020"
+    },
+    {
+      "ClientKey": "64937436",
+      "FirstName": "Kidane",
+      "MiddleName": "Samuel",
+      "LastName": "Tesfa",
+      "BirthDate": "11-10-1985",
+      "Height": "5.7",
+      "Weight": "60",
+      "BillingStreet": "5415 W Harmon Avenue,Las Vegas, NV, 89103, US",
+      "CreatedDate": "18-11-2020"
+    },
+    {
+      "ClientKey": "16293642",
+      "FirstName": "Kidane",
+      "MiddleName": "Samuel",
+      "LastName": "Tesfa",
+      "BirthDate": "11-10-1985",
+      "Height": "5.7",
+      "Weight": "60",
+      "BillingStreet": "5415 W Harmon Avenue,Las Vegas, NV, 89103, US",
+      "CreatedDate": "18-11-2020"
+    }
+  ],
+  "TotalCustomers": 3
+}

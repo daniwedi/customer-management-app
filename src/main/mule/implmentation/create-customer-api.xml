@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="57326ffa-8578-4ae4-89c1-a32e644c7d06" >
+		<file:connection />
+	</file:config>
+	<flow name="create-customer-apiFlow" doc:id="25f8f21f-6dd8-4ba3-90a5-d5b5d4632b41" >
+		<logger level="INFO" doc:name="Logger" doc:id="6923d6d1-4c6f-42d9-848e-86980e6df350" message="connecting"/>
+		<ee:transform doc:name="Transform Message" doc:id="65634a7c-d3c8-47b1-a7c8-9e0d7a77ca65" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="orginalPayload" doc:id="63209c58-d20c-451e-851b-5138727c1179" variableName="orginalPayload" />
+		<file:read doc:name="ReadCSVFile" doc:id="790f4673-88f3-4d24-884b-503f9fd4b8a6" config-ref="File_Config" path="${fttp.filepath}"/>
+		<set-variable value="#[%dw 2.0
+output application/java
+---
+payload]" doc:name="setReadCsvFile" doc:id="b13b1fb0-c047-4b30-83c7-68a7c255fa5c" variableName="ReadFile" />
+		<logger level="INFO" doc:name="CheckSizeCsv" doc:id="a22e3b1b-23d7-44b3-a86d-4065b27332df" message="#[sizeOf(vars.ReadFile)]"/>
+		<set-variable value="#[randomInt(100000000)]" doc:name="SetClientKey" doc:id="710cfc77-d04c-4d66-ab1c-f68532fc2616" variableName="ClientKey"/>
+		<choice doc:name="Choice" doc:id="dae341ee-79c7-48dd-b123-661bbe0a7066" >
+			<when expression="#[sizeOf(vars.ReadFile) ==0]">
+				<file:write doc:name="WriteHeaderTrue" doc:id="99fa89d3-f185-401c-b1a7-cc21047ae14a" config-ref="File_Config" path="${fttp.filepath}">
+					<file:content ><![CDATA[#[%dw 2.0
+output application/csv header = true
+fun format(inDate)=(inDate ++ |00:00:00| ++ |+00:00|) as DateTime as Number
+var CreatedDate= now()
+---
+ {
+	ClientKey:vars.ClientKey,
+	FirstName: vars.orginalPayload.FirstName,
+	MiddleName: vars.orginalPayload.MiddleName,
+	LastName: vars.orginalPayload.LastName,
+	BirthDate: format(vars.orginalPayload.BirthDate),
+	Height:vars.orginalPayload.Height,
+	Weight: vars.orginalPayload.Weight,
+	BillingStreet: vars.orginalPayload.BillingStreet,
+	BillingCity: vars.orginalPayload.BillingCity,
+	BillingState: vars.orginalPayload.BillingState,
+	BillingPostalCode: vars.orginalPayload.BillingPostalCode,
+	BillingCountry: vars.orginalPayload.BillingCountry,
+	CreatedDate: format(CreatedDate)
+}]]]></file:content>
+				</file:write>
+			</when>
+			<otherwise >
+				<file:write doc:name="WriteHeaderFalse" doc:id="380e7035-3c11-4de3-bd58-2c4846ff44b5" config-ref="File_Config" path="${fttp.filepath}" mode="APPEND">
+					<file:content ><![CDATA[#[%dw 2.0
+output application/csv header = false
+fun format(inDate)=(inDate ++ |00:00:00| ++ |+00:00|) as DateTime as Number
+var CreatedDate= now()
+---
+ {
+	ClientKey:vars.ClientKey,
+	FirstName: vars.orginalPayload.FirstName,
+	MiddleName: vars.orginalPayload.MiddleName,
+	LastName: vars.orginalPayload.LastName,
+	BirthDate: format(vars.orginalPayload.BirthDate),
+	Height:vars.orginalPayload.Height,
+	Weight: vars.orginalPayload.Weight,
+	BillingStreet: vars.orginalPayload.BillingStreet,
+	BillingCity: vars.orginalPayload.BillingCity,
+	BillingState: vars.orginalPayload.BillingState,
+	BillingPostalCode: vars.orginalPayload.BillingPostalCode,
+	BillingCountry: vars.orginalPayload.BillingCountry,
+	CreatedDate: format(CreatedDate)
+}]]]></file:content>
+				</file:write>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="94d205c4-2cc3-4a8e-8dfa-878342907d4a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"The customer with ClientKey " ++ vars.ClientKey ++ " is succesfully created "
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

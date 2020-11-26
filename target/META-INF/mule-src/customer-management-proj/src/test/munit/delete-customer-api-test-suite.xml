@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="delete-customer-api-test-suite.xml" />
+	<munit:test name="delete-customer-api-test-suite-delete-customer-apiFlowTest" doc:id="1de77dcb-c190-4747-94cb-b3024bd6718f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c329efe9-7441-4090-9b73-8a704194cbc9" processor="file:read">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d0700519-5a01-4636-a87b-b1fecd091f84" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[
+%dw 2.0
+output application/csv
+---
+readUrl('classpath://sample-data/read-customer-details.csv', &quot;application/csv&quot;)
+]" mediaType="application/csv" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="69ab7cab-bf36-4282-83ac-903829988164" processor="file:write">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0deb0a43-0e26-476b-a010-92d1b798d7a0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="437901f0-3061-4db1-a6d8-7b32a604a3c1" >
+				<munit:attributes value='#[
+%dw 2.0
+output application/json
+---
+{
+queryParams: {
+	ClientKey: "51787817"
+	}
+}
+]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to delete-customer-apiFlow" doc:id="a2ea01a0-2193-4ba3-b5c9-96de20220e2e" name="delete-customer-apiFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="804ea959-2bbf-486c-bb77-3982b4c042cd" actual="#[payload.message]" expected='#["The requested id " ++ vars.ClientID ++ "is succesfully deleted"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="delete-customer-api-test-suiteTest" doc:id="6d776eb6-b629-4947-95cf-49010d80a4bc" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="336f4072-1e9c-4650-bbc7-125c3ae6bc88" processor="file:read">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d0700519-5a01-4636-a87b-b1fecd091f84" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[
+%dw 2.0
+output application/csv
+---
+readUrl('classpath://sample-data/read-customer-details.csv', &quot;application/csv&quot;)
+]" mediaType="application/csv" />
+					<munit-tools:attributes value="#[
+%dw 2.0
+output application/csv
+---
+readUrl('classpath://sample-data/read-customer-details.csv', &quot;application/csv&quot;)
+]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="52303194-4503-412e-8fcd-7b8502f628f6" >
+				<munit:attributes value='#[
+%dw 2.0
+output application/json
+---
+{
+queryParams: {
+	ClientKey: "51787829"
+	}
+}
+]' />
+
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference to delete-customer-apiFlow" doc:id="8b0a8d49-3236-41ab-950b-754bc2f5119c" name="delete-customer-apiFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="50453785-5670-42d8-a38c-fa129f502268" actual="#[payload.Message]" expected='#["There is no record to be deleted"]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

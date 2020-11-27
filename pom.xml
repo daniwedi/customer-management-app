@@ -49,7 +49,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <coverage>
+                    <coverage>         
                         <runCoverage>true</runCoverage>
                         <formats>
                             <format>html</format>

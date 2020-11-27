@@ -1,7 +1,7 @@
 http:
   port: "8091"
 fttp:
-  filepath: "C:/Users/tesfa/gitcustomer-management-app/src/main/resources/Customers-PRD/customerFile.csv"
+  filepath: "C:/User/s/tesfa/git/customer-management-app/srcmain/resources/Customers-PRD/customerFile.csv"
 
 
   

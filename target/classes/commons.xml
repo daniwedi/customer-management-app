@@ -34,7 +34,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="94b5b55c-4474-4966-8c9c-7e7000ccad49" type="ANY">
 			<choice doc:name="Choice" doc:id="c417f81d-c797-43c8-8956-6d06fdc6b9a6" >
 				<when expression="#[error.errorType.namespace=='APIKIT']">
-					<choice doc:name="Choice" doc:id="24e14047-effd-4fd7-a22f-fc95eba4907f" >
+					<choice doc:name="Choice-inside" doc:id="24e14047-effd-4fd7-a22f-fc95eba4907f" >
 						<when expression="#[error.errorType.identifier=='BAD_REQUEST']">
 							<set-variable value="400" doc:name="set 400-bad-request" doc:id="f5f4f168-2a23-482f-825c-918085d8294d" variableName="httpStatus"/>
 						</when>

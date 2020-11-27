@@ -1,9 +1,0 @@
-http:
-  port: "8091"
-fttp:
-  filepath: "C:/Users/tesfa/git/customer-management-app/src/main/resources/Customers-PRD/customerFile.csv"
-
-
-  
-
-
